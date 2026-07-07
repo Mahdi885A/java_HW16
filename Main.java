@@ -42,6 +42,7 @@ public class Main {
                     5. Delete a member
                     6. Exit
                     """);
+            System.out.print("Enter number: ");
             menu =scanner.nextInt();
 
             switch (menu){
@@ -87,8 +88,9 @@ public class Main {
                 break;
                 case 6 :
                     System.out.println("Bye");
+                break;
                 default:
-                    System.err.println("Invalid!!!!!!!");
+                    System.err.println("Invalid!");
             }
 
         }while (menu != 6);
