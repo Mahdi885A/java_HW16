@@ -1,3 +1,4 @@
+import exception.DatabaseRepositoryException;
 import model.Book;
 import model.Member;
 import repository.BookRepository;
@@ -7,7 +8,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, DatabaseRepositoryException {
         Member member =new Member("ali","09123456789");
         Member member2 =new Member("Mahdi","09123456789");
         Book book = new Book("java","Ali Najafi",2230.01,4);
