@@ -1,5 +1,7 @@
 package repository;
 
+import exception.DatabaseConnectionException;
+import exception.DatabaseRepositoryException;
 import exception.MemberNotFound;
 import model.Member;
 import util.DatabaseConfig;
@@ -9,7 +11,7 @@ import java.sql.*;
 public class MemberRepository {
     private final DatabaseConfig dc =new DatabaseConfig();
 
-    public void registerMember(Member member) throws MemberNotFound,SQLException {
+    public void registerMember(Member member) throws MemberNotFound, DatabaseRepositoryException {
         String sql ="insert into members(full_name, phone)  values (?,?)";
         try(Connection connection = dc.getConnection()) {
 
@@ -19,12 +21,12 @@ public class MemberRepository {
             ps.setString(2, member.getPhone());
             ps.executeUpdate();
         }
-        catch (SQLException e){
-            System.out.println("Database member ERROR connection... "+ e.getMessage());
+        catch (SQLException | DatabaseConnectionException e){
+            throw new DatabaseRepositoryException("Member Insertion to Database Failed!");
         }
     }
 
-    public void findMemberById(int id) throws MemberNotFound,SQLException {
+    public void findMemberById(int id) throws MemberNotFound, DatabaseRepositoryException {
         String sql = "select * from members where id = ?";
         try(Connection connection = dc.getConnection()) {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -37,13 +39,13 @@ public class MemberRepository {
                 System.out.println("Phone: " + resultSet.getString("phone"));
             } else System.out.println("ID not found!");
         }
-        catch (SQLException e){
-            System.out.println("Database members ERROR connection... "+e.getMessage());
+        catch (SQLException | DatabaseConnectionException e){
+            throw new DatabaseRepositoryException("Member Find By ID From Database Failed!");
         }
 
     }
 
-    public void removeMember (int id) throws MemberNotFound,SQLException {
+    public void removeMember (int id) throws MemberNotFound, DatabaseRepositoryException {
         String sql = "delete from members where id = ?";
 
         try(Connection connection = dc.getConnection()) {
@@ -54,9 +56,9 @@ public class MemberRepository {
                 System.out.println("Remove successful");
             }
             else System.out.println("ID not found");
-        }catch (SQLException e) {
+        }catch (SQLException | DatabaseConnectionException e) {
 
-            System.out.println("Database members ERROR connection... "+ e.getMessage());
+            throw new DatabaseRepositoryException("Find All Members From Database Failed!");
         }
 
 
