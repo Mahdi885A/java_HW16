@@ -1,6 +1,8 @@
 package repository;
 
 import exception.BookNotFound;
+import exception.DatabaseConnectionException;
+import exception.DatabaseRepositoryException;
 import model.Book;
 import util.DatabaseConfig;
 
@@ -9,7 +11,7 @@ import java.sql.*;
 public class BookRepository {
     private final DatabaseConfig dc = new DatabaseConfig();
 
-    public void insertBook(Book book) throws BookNotFound, SQLException {
+    public void insertBook(Book book) throws BookNotFound, DatabaseRepositoryException {
         String sql = "insert into books(title, author, price, stock)  values (?,?,?,?)";
         try(Connection connection = dc.getConnection()) {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -19,12 +21,13 @@ public class BookRepository {
             ps.setInt(4, book.getStock());
             ps.executeUpdate();
         }
-        catch (SQLException e){
-            System.out.println("Database books ERROR connection... "+e.getMessage());
+        catch (SQLException | DatabaseConnectionException e){
+            throw new DatabaseRepositoryException("Book Insertion to Database Failed!");
+
         }
     }
 
-    public void findBookById (int id) throws BookNotFound, SQLException {
+    public void findBookById (int id) throws BookNotFound, DatabaseRepositoryException {
         String sql = "select * from books where id = ?";
         try(Connection connection = dc.getConnection()) {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -39,12 +42,12 @@ public class BookRepository {
                 System.out.println("Price : " + resultSet.getDouble("price"));
                 System.out.println("Stock : " + resultSet.getDouble("stock"));
             } else System.out.println("ID not found!");
-        }catch (SQLException e){
-            System.out.println("Database books ERROR connection... "+e.getMessage());
+        }catch (SQLException | DatabaseConnectionException e){
+            throw new DatabaseRepositoryException("Book Find By ID From Database Failed!");
         }
 
     }
-    public void updateBookPrice (int id , double price) throws BookNotFound,SQLException {
+    public void updateBookPrice (int id , double price) throws BookNotFound, DatabaseRepositoryException {
         String sql = "update books set price = ? where id = ?";
         try(Connection connection = dc.getConnection()) {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -55,11 +58,11 @@ public class BookRepository {
                 System.out.println("Update successful");
             } else System.out.println("ID not found!");
         }
-        catch (SQLException e){
-            System.out.println("Database books ERROR connection... "+e.getMessage());
+        catch (SQLException | DatabaseConnectionException e){
+            throw new DatabaseRepositoryException("Update Book Price From Database Failed!");
         }
     }
-    public void deleteBook(int id) throws BookNotFound,SQLException {
+    public void deleteBook(int id) throws BookNotFound, DatabaseRepositoryException {
         String sql = "delete from books where  id =?";
         try(Connection connection = dc.getConnection()) {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -69,8 +72,8 @@ public class BookRepository {
                 System.out.println("Remove successful");
             } else System.out.println("Id not found!");
         }
-        catch (SQLException e){
-            System.out.println("Database books ERROR connection... "+e.getMessage());
+        catch (SQLException | DatabaseConnectionException e){
+            throw new DatabaseRepositoryException("Delete Book From Database Failed!");
         }
     }
 
